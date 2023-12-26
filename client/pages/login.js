@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState ,useContext} from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { Context } from "../context";
+import { useRouter } from 'next/router';
+
 const Login = () => {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+ 
+
+
+  const { state, dispatch } = useContext(Context);
+
+
+  // router 
+
+  const router =useRouter();
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,7 +29,17 @@ const Login = () => {
         email,
         password,
       });
-      console.log("login response", data);
+      //console.log("login response", data);
+        dispatch({
+          type:"LOGIN",
+          payload: data,
+        });
+        window.localStorage.setItem('user',JSON.stringify(data));
+
+        //redirect
+
+        router.push("/")
+
 
     } catch (err) {
       toast.error(err.response.data, {

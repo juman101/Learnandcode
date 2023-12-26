@@ -71,5 +71,14 @@ return res.status(400).send("Error. Try again.");
 
     }
 };
-
+export const logout =async(req,res)=>
+{
+  try{
+  res.clearCookie("token");
+  return res.json({message: "Signout Success"})
+  }
+  catch(err){
+      console.logq(err);
+  }
+}
 export default router;
