@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-   
-    const {data}=await axios.post(`http://localhost:8001/api/register`,{
-      name,email,password
-    });
-    console.log("register response",data);
+
+    try {
+      const { data } = await axios.post(`/api/register`, {
+        name,
+        email,
+        password,
+      });
+     // console.log("register response", data);
+     toast('Resgitration succefull please login');
+    } catch (err) {
+      toast.error(err.response.data, {
+        style: {
+          maxWidth: '400px', // Adjust the maximum width as needed
+        },
+      });
+      // You can handle the error here, e.g., show an error message to the user
+    }
   };
 
   return (
