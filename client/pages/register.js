@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect,useContext } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { Context } from "../context";
+import { useRouter } from 'next/router';
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router =useRouter();
+  const { state, dispatch } = useContext(Context);
+  const {user}=state;
+  useEffect(()=>{
+      if(user!==null)
+      router.push("/");
+  },[user]);
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

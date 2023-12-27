@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { toast } from "react-toastify";
+import { useState, useEffect, useContext, useRef } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faSignInAlt, faUserPlus, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
+import { Context } from '../context';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const buttonStyle = {
   display: 'inline-flex',
@@ -21,62 +22,72 @@ const activeButtonStyle = {
   borderBottom: '2px solid blue',
 };
 
-import { Context } from "../context";
-
-// ... (imports and styles remain the same)
-
 const TopNav = () => {
   const router = useRouter();
   const [activeButton, setActiveButton] = useState(null);
-  const [isSubMenuVisible, setIsSubMenuVisible] = useState(false);
   const { state, dispatch } = useContext(Context);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const { user } = state;
-
-  const handleSetActive = (pathname) => {
-    setActiveButton(pathname);
-  };
+  useEffect(() => {
+    setActiveButton(router.pathname);
+  }, [router.pathname]);
 
   const logout = async () => {
-    dispatch({ type: "LOGOUT" });
-    window.localStorage.removeItem("user");
-    const { data } = await axios.get('/api/logout');
-    toast(data.message);
-    router.push("/login");
+    dispatch({ type: 'LOGOUT' });
+    window.localStorage.removeItem('user');
+    try {
+      const { data } = await axios.get('/api/logout');
+      toast(data.message);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
-  const toggleSubMenu = () => {
-    setIsSubMenuVisible(!isSubMenuVisible);
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
   };
+
+  const hideDropdown = () => {
+    setShowDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        hideDropdown();
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <div>
         <Link href="/">
-          <p
-            style={router.pathname === '/' ? activeButtonStyle : buttonStyle}
-            onClick={() => handleSetActive('/')}
-          >
+          <p style={activeButton === '/' ? activeButtonStyle : buttonStyle}>
             <FontAwesomeIcon icon={faHome} style={{ marginRight: '5px' }} />
             App
           </p>
         </Link>
-        {!user && (
+
+        {!state.user && (
           <>
             <Link href="/login">
-              <p
-                style={router.pathname === '/login' ? activeButtonStyle : buttonStyle}
-                onClick={() => handleSetActive('/login')}
-              >
+              <p style={activeButton === '/login' ? activeButtonStyle : buttonStyle}>
                 <FontAwesomeIcon icon={faSignInAlt} style={{ marginRight: '5px' }} />
                 Login
               </p>
             </Link>
+
             <Link href="/register">
-              <p
-                style={router.pathname === '/register' ? activeButtonStyle : buttonStyle}
-                onClick={() => handleSetActive('/register')}
-              >
+              <p style={activeButton === '/register' ? activeButtonStyle : buttonStyle}>
                 <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: '5px' }} />
                 Register
               </p>
@@ -84,24 +95,59 @@ const TopNav = () => {
           </>
         )}
       </div>
-      {user && (
-        <div
-          style={{ display: 'flex', alignItems: 'center', position: 'relative' }}
-          onMouseEnter={toggleSubMenu}
-          onMouseLeave={toggleSubMenu}
-        >
-          <Link href="/profile">
-            <p style={router.pathname === '/profile' ? activeButtonStyle : buttonStyle} onClick={() => handleSetActive('/profile')}>
-              <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: '5px' }} />
-              {user.name}
-            </p>
-          </Link>
-          {isSubMenuVisible && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, zIndex: 1 }}>
-              <p style={buttonStyle} onClick={logout}>
+
+      {state.user && (
+        <div style={{ position: 'relative' }}>
+          <p
+            style={{ ...buttonStyle, cursor: 'pointer', marginRight: '5px' }}
+            onClick={toggleDropdown}
+          >
+            <FontAwesomeIcon icon={faUser} style={{ marginRight: '5px' }} />
+            <span>{state.user.name}</span>
+          </p>
+          {showDropdown && (
+            <div
+              ref={dropdownRef}
+              style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                background: '#ffffff',
+                border: '1px solid #ccc',
+                boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
+                borderRadius: '4px',
+                zIndex: 1,
+              }}
+            >
+              <Link href="/user">
+                <p
+                  style={{
+                    ...buttonStyle,
+                    padding: '8px 20px',
+                    cursor: 'pointer',
+                    margin: '0',
+                  }}
+                  onClick={hideDropdown}
+                >
+                  <FontAwesomeIcon icon={faHome} style={{ marginRight: '5px' }} />
+                  Dashboard
+                </p>
+              </Link>
+              <p
+                style={{
+                  ...buttonStyle,
+                  padding: '8px 20px',
+                  cursor: 'pointer',
+                  margin: '0',
+                }}
+                onClick={() => {
+                  logout();
+                  hideDropdown();
+                }}
+              >
+                <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '5px' }} />
                 Logout
               </p>
-              {/* Add other profile submenu items here */}
             </div>
           )}
         </div>

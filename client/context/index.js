@@ -1,19 +1,20 @@
-import { createContext, useReducer, useEffect } from "react";
+import { useReducer, createContext, useEffect } from "react";
+import axios from "axios";
+import { useRouter, userRouter } from "next/router";
 
-// Initial state
-const initialState = {
+// initial state
+const intialState = {
   user: null,
 };
 
-// Create context
+// create context
 const Context = createContext();
 
-// Reducer function
+// root reducer
 const rootReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
       return { ...state, user: action.payload };
-    // Handle other action types if needed
     case "LOGOUT":
       return { ...state, user: null };
     default:
@@ -21,24 +22,62 @@ const rootReducer = (state, action) => {
   }
 };
 
-// Context provider component
+// context provider
 const Provider = ({ children }) => {
-  const [state, dispatch] = useReducer(rootReducer, initialState);
+  const [state, dispatch] = useReducer(rootReducer, intialState);
 
-  useEffect(() => { dispatch({
-        type: "LOGIN",
-        payload: JSON.parse(window.localStorage.getItem("user"))
+  // router
+  const router = useRouter();
 
-  })
-},[])
+  useEffect(() => {
+    dispatch({
+      type: "LOGIN",
+      payload: JSON.parse(window.localStorage.getItem("user")),
+    });
+  }, []);
 
-  // Add other actions if needed
+  axios.interceptors.response.use(
+    function (response) {
+      // any status code that lie within the range of 2XX cause this function
+      // to trigger
+      return response;
+    },
+    function (error) {
+      // any status codes that falls outside the range of 2xx cause this function
+      // to trigger
+      let res = error.response;
+      if (res.status === 401 && res.config && !res.config.__isRetryRequest) {
+        return new Promise((resolve, reject) => {
+          axios
+            .get("/api/logout")
+            .then((data) => {
+              console.log("/401 error > logout");
+              dispatch({ type: "LOGOUT" });
+              window.localStorage.removeItem("user");
+              router.push("/login");
+            })
+            .catch((err) => {
+              console.log("AXIOS INTERCEPTORS ERR", err);
+              reject(error);
+            });
+        });
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  useEffect(() => {
+    const getCsrfToken = async () => {
+      const { data } = await axios.get("/api/csrf-token");
+      // console.log("CSRF", data);
+      axios.defaults.headers["X-CSRF-Token"] = data.csrfToken;
+    };
+    getCsrfToken();
+  }, []);
 
   return (
-    <Context.Provider value={{ state, dispatch}}>
-      {children}
-    </Context.Provider>
+    <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
   );
 };
 
-export { Provider, Context };
+export { Context, Provider };

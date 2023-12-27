@@ -1,4 +1,4 @@
-import React, { useState ,useContext} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -6,50 +6,58 @@ import { Context } from "../context";
 import { useRouter } from 'next/router';
 
 const Login = () => {
-  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
- 
-
+  const [loading, setLoading] = useState(false);
 
   const { state, dispatch } = useContext(Context);
+  const router = useRouter();
+  const { user } = state;
 
-
-  // router 
-
-  const router =useRouter();
-
-
+  useEffect(() => {
+    if (user !== null) {
+      router.push("/");
+    }
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const { data } = await axios.post(`/api/login`, {
         email,
         password,
       });
-      //console.log("login response", data);
-        dispatch({
-          type:"LOGIN",
-          payload: data,
-        });
-        window.localStorage.setItem('user',JSON.stringify(data));
 
-        //redirect
+      dispatch({
+        type: "LOGIN",
+        payload: data,
+      });
 
-        router.push("/")
+      const LOCAL_STORAGE_KEY = 'user';
+      window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
 
+      // Redirect
+      router.push("/");
 
     } catch (err) {
-      toast.error(err.response.data, {
+      console.error('Error in login:', err);
+    
+      const errorResponse = err.response;
+      const errorMessage = errorResponse?.data || 'An error occurred during login.';
+    
+      toast.error(errorMessage, {
         style: {
-          maxWidth: '400px', // Adjust the maximum width as needed
+          maxWidth: '400px',
         },
       });
-      // You can handle the error here, e.g., show an error message to the user
+    } finally {
+      setLoading(false);
     }
-  };
+    
+  }
 
   return (
     <>
@@ -73,16 +81,18 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit" className="btn btn-block btn-primary">
-            Submit
+          <button
+            type="submit"
+            className="btn btn-block btn-primary"
+            disabled={loading}
+          >
+            {loading ? 'Submitting...' : 'Submit'}
           </button>
         </form>
 
         <p className="text-center p-3">
-          Not yer registered ?{" "}
-          <Link href="/register">
-            Login
-          </Link>
+          Not yet registered?{' '}
+          <Link href="/register">Register</Link>
         </p>
       </div>
     </>
