@@ -16,7 +16,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user !== null) {
-      router.push("/");
+      router.push("/user");
     }
   }, [user]);
 
@@ -40,7 +40,7 @@ const Login = () => {
       window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
 
       // Redirect
-      router.push("/");
+      router.push("/user");
 
     } catch (err) {
       console.error('Error in login:', err);

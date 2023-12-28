@@ -77,6 +77,20 @@ const TopNav = () => {
           </p>
         </Link>
 
+        {state.user && state.user.role&&state.user.role.includes("Instructor")?(<Link href="/instructor/course/create">
+              <p style={activeButton === '/instructor/course/create' ? activeButtonStyle : buttonStyle}>
+                <FontAwesomeIcon icon={faSignInAlt} style={{ marginRight: '5px' }} />
+                CREATE COURSE
+              </p>
+            </Link>):(
+              <Link href="/user/become-instructor">
+              <p style={activeButton === '/user/become-instructor' ? activeButtonStyle : buttonStyle}>
+                <FontAwesomeIcon icon={faSignInAlt} style={{ marginRight: '5px' }} />
+                Become Instructor
+              </p>
+            </Link>
+            )}
+
         {!state.user && (
           <>
             <Link href="/login">
