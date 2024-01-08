@@ -27,9 +27,10 @@ const Register = () => {
         email,
         password,
       });
-     // console.log("register response", data);
+      console.log("register response", data);
      toast('Resgitration succefull please login');
     } catch (err) {
+      console.log("error here")
       toast.error(err.response.data, {
         style: {
           maxWidth: '400px', // Adjust the maximum width as needed

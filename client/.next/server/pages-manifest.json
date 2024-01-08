@@ -2,7 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/user/become-instructor": "pages/user/become-instructor.js",
-  "/instructor/course/create": "pages/instructor/course/create.js",
-  "/": "pages/index.js"
+  "/forgot-password": "pages/forgot-password.js",
+  "/login": "pages/login.js",
+  "/user": "pages/user.js",
+  "/register": "pages/register.js"
 }

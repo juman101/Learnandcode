@@ -1,74 +1,51 @@
+import React, { useState } from "react";
+import { Form, Button } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import { useState,useEffect } from "react";
-// just git demo
-import {Select} from 'antd';
+import CourseCreateForm from "../../../components/forms/CourseCreateForm";
+const CourseCreate = () => {
+  const [values, setValues] = useState({
+    name: "",
+    description: "",
+    uploading: false,
+    paid: true,
+    price: "0",
+    loading: false,
+    imagePreview: "",
+  });
 
-const Coursecreate = () => {
+   const handleImage =()=>
+   {
 
-  const[values,setValues]=useState({
-name: '',
-description: '',
-uploading: false,
-paid :true,
-loading : false,
-imagePreview: ''
-  })
+   };
 
-  const handleChange=e=>{
-    setValues({...values,[e.target.name]:e.target.value});
-  }
-  const handleImage=e=>{
-   
-  }
-  const handleSubmit=e=>{
-      e.preventDefault();
-  console.log(values);
-  }
+  const handleChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(values);
+    // Add your logic to send the data to the server using axios
+  };
 
-  const courseCreateForm = () => (
-    <form onSubmit={handleSubmit}>
-      <div className="form-group">
-        <input
-          type="text"
-          name="name"
-          className="form-control"
-          placeholder="Name"
-          value={values.name}
-          onChange={handleChange}
-        />
-      </div>
-       
-      <div className="form-group">
-        <textarea 
-        name = "description"
-        cols ="7"
-        rows ="7"
-        value ={values.description}
-        className="form-control"
-        onChange={handleChange}
-        ></textarea>
-      </div>
-      
-      
-
-        
-      <button type="submit" className="btn btn-primary">
-        Submit
-      </button>
-    </form>
-  );
-
-
-
-
+  
   return (
-    <div>
-      <h1 className="jumbotron text-center square"> 
-      Create Course</h1>
-      {courseCreateForm()}
+    <div className="container mt-4">
+      <h1 className="jumbotron text-center">Create Course</h1>
+      <CourseCreateForm
+      handleChange={handleChange}
+      handleImage={handleImage}
+      handleSubmit={handleSubmit}
+      values={values}
+      setValues={setValues}
+      
+      />
+      <pre>
+      {JSON.stringify(values,null,4)}
+      </pre>
     </div>
-  )
-}
+  );
+};
 
-export default Coursecreate
+export default CourseCreate;

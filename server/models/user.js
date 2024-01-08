@@ -31,11 +31,15 @@ const userSchema =new Schema(
             default: ["Subscriber"],
             enum: ["Subscriber","Instructor","Admin"],
         },
-        // payment data 
+       
 
-
+        passwordResetCode :{
+            type: String,
+            default: "",
+        },
 
     },
+   
     {timestamps:true}
 );
 
