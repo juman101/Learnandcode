@@ -68,6 +68,7 @@ export const login = async (req, res) => {
     const match = await comparePassword(password, user.password);
     // create signed jwt
     if(!match) return res.status(400).send("wrong password");
+    
     const token = jwt.sign({ _id: user._id },JWT_SECRET, {
       expiresIn: "7d",
     });
