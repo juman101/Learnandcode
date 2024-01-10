@@ -2,7 +2,7 @@ import { Form, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-const CourseCreateForm = ({ values, handleChange, setValues, handleSubmit,handleImage }) => 
+const CourseCreateForm = ({ values, handleChange, setValues, handleSubmit,handleImage,preview }) => 
 
 {
     
@@ -58,10 +58,16 @@ const CourseCreateForm = ({ values, handleChange, setValues, handleSubmit,handle
 
 
       
-          <Form.Group controlId="formFile" className="mb-3">
-            <Form.Label>Upload an Image</Form.Label>
-            <Form.Control type="file" />
-          </Form.Group>
+<Form.Group controlId="formFile" className="mb-3">
+        <Form.Label>Upload an Image</Form.Label>
+        <Form.Control type="file" onChange={handleImage} />
+        {preview && (
+          <div className="mt-2">
+            <p>Image Preview:</p>
+            <img src={preview} alt="Image Preview" style={{ maxWidth: "5%", height: "auto" }} />
+          </div>
+        )}
+      </Form.Group>
       
           <Button variant="primary" type="submit">
             Submit

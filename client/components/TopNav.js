@@ -91,6 +91,8 @@ const TopNav = () => {
             </Link>
             )}
 
+            
+
         {!state.user && (
           <>
             <Link href="/login">
@@ -162,6 +164,28 @@ const TopNav = () => {
                 <FontAwesomeIcon icon={faSignOutAlt} style={{ marginRight: '5px' }} />
                 Logout
               </p>
+
+              {state.user && state.user.role&&state.user.role.includes("Instructor")&&
+              (
+                <Link href="/instructor">
+                <p
+                  style={{
+                    ...buttonStyle,
+                    padding: '8px 20px',
+                    cursor: 'pointer',
+                    margin: '0',
+                  }}
+                  onClick={hideDropdown}
+                >
+                  <FontAwesomeIcon icon={faHome} style={{ marginRight: '5px' }} />
+                    Instructor Dashboard
+                </p>
+              </Link>
+
+              )
+              
+            
+            }
             </div>
           )}
         </div>

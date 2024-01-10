@@ -71,7 +71,7 @@ export const currentInstructor =async(req,res) =>
        let user = await User.findById(req.auth._id).select('-password').exec();
       
        if(!user.role.includes("Instructor")){
-       return res.staus(401).send("Unauthorized");
+       return res.sendStatus(403);
       }
       else
       {

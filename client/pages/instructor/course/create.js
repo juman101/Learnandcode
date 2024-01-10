@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import axios from "axios";
 import CourseCreateForm from "../../../components/forms/CourseCreateForm";
+
+import Resizer from "react-image-file-resizer";
+import axios from "axios";
+
 const CourseCreate = () => {
   const [values, setValues] = useState({
     name: "",
@@ -11,12 +13,38 @@ const CourseCreate = () => {
     paid: true,
     price: "0",
     loading: false,
-    imagePreview: "",
+
   });
-
-   const handleImage =()=>
+    const[image, setImage]=useState("");
+  const [preview, setPreview]=useState('');
+  const [uploadButtonText, setUploadButtonText]=useState('');
+   
+  
+  const handleImage =(e)=>
    {
+    
+    let file =e.target.files[0];
+    setPreview(window.URL.createObjectURL(file));
+    setUploadButtonText(file.name);
+         
 
+   Resizer.default.imageFileResizer(file,720,500,"JPEG",100,0,async(uri)=>
+   {
+    try{
+    
+            let {data}=await axios.post('/api/course/upload-image',{
+                     image: uri,
+            });
+            console.log("IMAGE UPLOADED",data);
+
+    }
+    catch(err)
+    {
+      console.log(err);
+      
+    }
+
+   })
    };
 
   const handleChange = (e) => {
@@ -39,6 +67,7 @@ const CourseCreate = () => {
       handleSubmit={handleSubmit}
       values={values}
       setValues={setValues}
+      preview={preview}
       
       />
       <pre>
