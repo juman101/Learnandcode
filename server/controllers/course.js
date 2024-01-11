@@ -4,7 +4,9 @@ import { nanoid } from 'nanoid';
 import dotenv from 'dotenv';
 dotenv.config();
 
+import slugify from 'slugify';
 
+import Course from '../models/course.js';
 const awsConfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -29,7 +31,7 @@ const base64Data = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'b
 const type = image.split(";")[0].split("/")[1];
 
 const params = {
-    Bucket: "jumans3",
+    Bucket: "edemy-bucket-siddhant",
     Key: `${nanoid()}.${type}`,
     Body: base64Data,
     ACL: "public-read",
@@ -54,4 +56,47 @@ catch(err){
     console.log(err);
 }
 
+}
+
+
+export const create = async(req,res)=>
+{
+    try{
+          
+           const alreadyExist =await Course.findOne({
+            slug:slugify(req.body.name.toLowerCase()),
+
+           });
+           if(alreadyExist)
+           return res.status(400).send("title taken already");
+
+           const course =await new Course({
+            slug :slugify(req.body.name),
+            instructor: req.auth._id,
+            ...req.body,
+           }).save();
+
+           res.json(course);
+
+    }
+
+    catch(err)
+    {
+        console.log(err);
+        return res.status(400).send("Course create failed");
+    }
+
+
+}
+
+
+export const read = async (req, res) => {
+    try{
+        const course = await Course.findOne({ slug: req.params.slug})
+        .populate("instructor", "_id name")
+        .exec();
+        res.json(course);
+    } catch (err) {
+        console.log(err);
+    }
 }

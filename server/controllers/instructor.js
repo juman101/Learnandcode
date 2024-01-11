@@ -3,7 +3,7 @@ import User from "../models/user.js";
 import queryString from "query-string";
 import dotenv from 'dotenv';
 dotenv.config();
- 
+ import Course from "../models/course.js";
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_PRIVATE);
 
@@ -83,4 +83,18 @@ export const currentInstructor =async(req,res) =>
       console.log(err);
      }
 
+}
+
+export const instructorCourses =async(req,res) =>
+{
+  try{
+
+const courses = await Course.find({instructor:req.auth._id}).sort({createdAt:-1}).exec();
+res.json(courses);
+
+  }
+  catch(err)
+  {
+    console.log(err);
+  }
 }
