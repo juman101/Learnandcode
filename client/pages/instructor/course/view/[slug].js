@@ -1,11 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/router";
 import InstructorRoute from "../../../../components/routes/InstructorRoute";
+import Modal from "./Modal";
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import AddLessonForm from "../../../../components/forms/AddLessonForm";
+import { toast } from "react-toastify";
 
 const CourseView = () => {
     const [course, setCourse] = useState({});
+ const [visible, setVisible] = useState(true);
+const [values, setValues] = useState({
+        title: "",
+        content: "",
+        video: "",
+    })
+    const [uploading, setUploading] = useState(false);
+    const [uploadButtonText, setUploadButtonText] = useState("Upload video");
+    const [progress, setProgress] = useState(0);
+
     const router = useRouter();
     const { slug } = router.query;
 
@@ -17,11 +30,64 @@ const CourseView = () => {
         const { data } = await axios.get(`/api/course/${slug}`);
         setCourse(data);
     }
+    const handleAddLesson = async (e) => {
+        e.preventDefault();
+        try {
+            const { data } = await axios.post(`/api/course/lesson/${slug}/${course.instructor._id}`, values);
+            setValues({ ...values, title: "", content: "", video: {} });
+            setUploadButtonText("upload video");
+            setCourse(data);
+            toast("lesson added");
+            props.closeModal();
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    const handleVideo = async (e) => {
+        try{
+            const file= e.target.files[0];
+            setUploadButtonText(file.name);
+            setUploading(true);
+            const videoData = new FormData();
+            videoData.append('video', file)
+
+            const {data} = await axios.post(`/api/course/video-upload/${course.instructor._id}`, videoData, {
+                onUploadProgress: (e)=>{
+                    setProgress(Math.round((100*e.loaded) / e.total));
+                }
+            })
+            console.log(data);
+            setValues({...values, video: data})
+            setUploading(false);
+            setVisible(false);
+
+        } catch(err){
+            console.log(err);
+            setUploading(false);
+            toast("Video upload failed");
+        }
+    }
+
+
+    const [isModalOpen, setModalOpen] = useState(false);
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
 
     return (
         <InstructorRoute>
             <div className="container-fluid pt-3">
-                {course && (
+            {
+                <pre>{JSON.stringify(course,null,4)}</pre>
+            }
+                {
+               
+                course && (
                     <div className="container-fluid pt-1">
                         <div className="d-flex align-items-center pt-2">
                             <img
@@ -34,23 +100,37 @@ const CourseView = () => {
                                 <p>{course.lessons && course.lessons.length} Lessons</p>
                                 <p style={{ fontSize: "10px" }}>{course.category}</p>
                             </div>
-                            <div className="ml-auto">
-                                <div className="tooltip">
-                                    <span className="tooltiptext">Edit</span>
-                                    <span className="h5 pointer text-warning">&#9998;</span>
-                                </div>
-                                <div className="tooltip">
-                                    <span className="tooltiptext">Publish</span>
-                                    <span className="h5 pointer text-danger">&#10004;</span>
-                                </div>
-                            </div>
+                           
                         </div>
-                        <hr/>
+                        <hr />
                         <div className="row">
                             <div className="col">
                                 <ReactMarkdown>{course.description}</ReactMarkdown>
                             </div>
                         </div>
+                        <div className="row">
+                            <button
+                                onClick={openModal}
+                                className="col-md-6 offset-md-3 text-center btn btn-primary btn-lg"
+                            >
+                                Add lesson
+                            </button>
+                            <Modal isOpen={isModalOpen} onClose={closeModal}>
+                      <AddLessonForm
+        values={values}
+        setValues={setValues}
+        handleAddLesson={handleAddLesson}
+        uploading={uploading}
+        uploadButtonText={uploadButtonText}
+        handleVideo={handleVideo}
+        progress={progress}
+        closeModal={closeModal} 
+                    />
+</Modal>
+
+                        </div>
+                        
+                        <br />
                     </div>
                 )}
             </div>
