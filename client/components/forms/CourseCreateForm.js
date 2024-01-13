@@ -1,80 +1,143 @@
-import { Form, Button } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from 'react';
 
+const CourseCreateForm = ({
+  values,
+  handleChange,
+  setValues,
+  handleSubmit,
+  handleImage,
+  preview, 
+  uploadButtonText,
+  // handleImageRemove,
+  editPage=false
+}) => {
+  const [buttonValue, setButtonValue] = useState('Save & Continue');
 
-const CourseCreateForm = ({ values, handleChange, setValues, handleSubmit,handleImage,preview }) => 
+  const handleCostChange = (e) => {
+    setValues({ ...values, price: parseInt(e.target.value) });
+  };
 
-{
-    
+  const handlePaidChange = (e) => {
+    setValues({ ...values, paid: e.target.value == 'paid', cost: 0 });
+    setButtonValue(e.target.value == 'paid' ? 'Save & Continue' : 'Submit');
+  };
 
+  const renderCostInput = () => {
+    if (values.paid) {
+      return (
+        <div className="form-group d-flex align-items-center mb-3">
+          <label htmlFor="cost" className="mr-2">
+            Price:
+          </label>
+          <select
+            name="Price"
+            className="form-control"
+            value={values.price}
+            onChange={handleCostChange}
+          >
+            {[...Array(100)].map((_, index) => (
+              <option key={index + 1} value={index * 100 + 99}>
+                {index * 100 + 99}
+              </option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+    return null;
+  };
 
-    return (
-
-
-        <Form onSubmit={handleSubmit}>
-          <Form.Group>
-            <Form.Control
-              type="text"
-              name="name"
-              placeholder="Name of the Course"
-              value={values.name}
-              onChange={handleChange}
-            />
-          </Form.Group>
-      
-          <Form.Group>
-            <Form.Control
-              as="textarea"
-              name="description"
-              rows="7"
-              value={values.description}
-              placeholder="Description"
-              onChange={handleChange}
-            />
-          </Form.Group>
-      
-          <Form.Group>
-  <Form.Label>Course Pricing</Form.Label>
-  <Form.Select onChange={(e) => setValues({ ...values, paid: e.target.value === "true" })} defaultValue="Choose...">
-    <option value="true">Paid</option>
-    <option value="false">Free</option>
-  </Form.Select>
-  {values.paid && (
-    <div className="col-md-6">
-      <div className="form-group">
-        <select defaultValue="499" style={{ width: "100%" }} onChange={(e) => setValues({ ...values, price: e.target.value })}>
-          <option value="499">Rs.499</option>
-          <option value="599">Rs.599</option>
-          <option value="999">Rs.999</option>
-          <option value="1499">Rs.1499</option>
-          <option value="1999">Rs.1999</option>
-          <option value="2499">Rs.2499</option>
-          <option value="2999">Rs.2999</option>
-        </select>
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="form-group mb-3">
+        <input
+          type="text"
+          name="name"
+          className="form-control"
+          placeholder="Name"
+          value={values.name}
+          onChange={handleChange}
+        />
       </div>
-    </div>
-  )}
-</Form.Group>
-
-
-      
-<Form.Group controlId="formFile" className="mb-3">
-        <Form.Label>Upload an Image</Form.Label>
-        <Form.Control type="file" onChange={handleImage} />
+      <div className="form-group mb-3">
+        <textarea
+          name="description"
+          cols="7"
+          rows="7"
+          placeholder="Description"
+          value={values.description}
+          className="form-control"
+          onChange={handleChange}
+        ></textarea>
+      </div>
+      <div className="row mb-3">
+        <div className="col-md-6">
+          <div className="form-group">
+            <select
+              name="paid"
+              className="form-control"
+              value={values.paid ? 'paid' : 'free'}
+              onChange={handlePaidChange}
+            >
+              <option value="paid">Paid</option>
+              <option value="free">Free</option>
+            </select>
+          </div>
+        </div>
+        <div className="col-md-6">{renderCostInput()}</div>
+      </div>
+      <div className="form-group mb-3">
+        <input
+          type="text"
+          name="category"
+          className="form-control"
+          placeholder="Category"
+          value={values.category}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="form-row mb-3">
+        <div className="col">
+          <div className="form-group">
+            <label className="btn btn-outline-secondary btn-block text-left">
+              {uploadButtonText}
+              <input
+                type="file"
+                name="image"
+                onChange={handleImage}
+                accept="image/*"
+                hidden
+              />
+            </label>
+          </div>
+        </div>
         {preview && (
-          <div className="mt-2">
-            <p>Image Preview:</p>
-            <img src={preview} alt="Image Preview" style={{ maxWidth: "5%", height: "auto" }} />
+          <div className="col">
+            <img
+              src={preview}
+              alt="Preview"
+              style={{ width: '100px', height: 'auto' }}
+            />
+            {/* <button onClick={handleImageRemove} className="btn-remove">
+              X
+            </button> */}
           </div>
         )}
-      </Form.Group>
-      
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </Form>
-      );
-}
-
+      </div>
+      <div className="row">
+        <div className="col">
+          <button
+            onClick={handleSubmit}
+            disabled={values.loading || values.uploading}
+            className="btn btn-primary"
+            type="submit"
+          >
+            {values.loading ? 'Saving...' : buttonValue}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+};
 
 export default CourseCreateForm;
