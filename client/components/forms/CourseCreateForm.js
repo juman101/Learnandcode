@@ -9,7 +9,7 @@ const CourseCreateForm = ({
   preview, 
   uploadButtonText,
   // handleImageRemove,
-  editPage=false
+  editPage = false,
 }) => {
   const [buttonValue, setButtonValue] = useState('Save & Continue');
 
@@ -48,7 +48,9 @@ const CourseCreateForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
+    {values && (
+      <form onSubmit={handleSubmit}>
       <div className="form-group mb-3">
         <input
           type="text"
@@ -123,20 +125,32 @@ const CourseCreateForm = ({
             </button> */}
           </div>
         )}
+        {editPage && values.image && (
+          <div className="col">
+            <img
+              src={values.image.Location}
+              alt="image not available"
+              style={{ width: '100px', height: 'auto' }}
+            />
+          </div>
+        )}
       </div>
+      {!editPage && 
       <div className="row">
-        <div className="col">
-          <button
-            onClick={handleSubmit}
-            disabled={values.loading || values.uploading}
-            className="btn btn-primary"
-            type="submit"
-          >
-            {values.loading ? 'Saving...' : buttonValue}
-          </button>
-        </div>
+      <div className="col">
+        <button
+          onClick={handleSubmit}
+          disabled={values.loading || values.uploading}
+          className="btn btn-primary"
+          type="submit"
+        >
+          {values.loading ? 'Saving...' : buttonValue}
+        </button>
       </div>
+    </div>}
     </form>
+    )}
+    </>
   );
 };
 

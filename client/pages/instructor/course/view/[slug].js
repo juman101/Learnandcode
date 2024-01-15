@@ -111,7 +111,7 @@ const CourseView = () => {
                     }}
                   />
 
-                  {/* Publish Course Icon */}
+                  
                   <FaToggleOn
                     style={{
                       cursor: 'pointer',
