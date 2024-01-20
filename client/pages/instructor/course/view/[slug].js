@@ -78,6 +78,42 @@ const CourseView = () => {
     setVisible(false);
   };
 
+
+  const handlepublish =async (e,courseId)=>
+  {
+   try{
+                 
+    let answer =window.confirm('Are you sure you want to publish it will be live');
+   if(!answer) return;
+
+   const {data}=await axios.put(`/api/course/publish/${courseId}`);
+   setCourse(data);
+   }
+
+   catch(err)
+   {
+    console.log("error in here1")
+
+   }
+  }
+
+  const handleUnpublish = async (e,courseId)=>
+  {
+    
+try{
+  let answer =window.confirm('Are you sure you want to publish it will be live');
+  if(!answer) return;
+  const {data}=await axios.put(`/api/course/unpublish/${courseId}`);
+  setCourse(data);
+   }
+  
+   catch(err)
+   {
+    console.log("error in here2")
+    
+   }
+  }
+
   return (
     <InstructorRoute>
       <div className="container-fluid pt-3">
@@ -118,10 +154,7 @@ const CourseView = () => {
                       color: course.published ? '#4caf50' : '#d9534f', // Green if published, Red if not
                       fontSize: '20px',
                     }}
-                    onClick={() => {
-                      // Handle publish course action here
-                      console.log('Publish course clicked');
-                    }}
+                    onClick={(e) => course.published? handleUnpublish(e,course._id):handlepublish(e,course._id)}
                   />
                 </div>
             </div>

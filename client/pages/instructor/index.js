@@ -6,6 +6,10 @@ import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 
+
+
+
+
 // Main component definition
 const InstructorIndex = () => {
   // State to hold courses data
