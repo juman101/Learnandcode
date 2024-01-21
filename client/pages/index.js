@@ -2,24 +2,24 @@ import { withRouter } from "next/router";
 import axios from "axios";
 import CourseCard from "../components/cards/CourseCard";
 import Head from "next/head";
-import { useState,useEffect } from "react";
-const Index = () => {
+
+const Index = ({courses}) => {
   
-  const [courses , setCourses]=useState([]);
+  // const [courses , setCourses]=useState([]);
 
-  useEffect(()=>
-  {
-    const fetchcourses =async () =>
-    {
-      const {data} = await axios.get("/api/courses");
-      console.log(data);
-      setCourses(data);
+  // useEffect(()=>
+  // {
+  //   const fetchcourses =async () =>
+  //   {
+  //     const {data} = await axios.get("/api/courses");
+  //     console.log(data);
+  //     setCourses(data);
 
-    };
+  //   };
 
-    fetchcourses();
+  //   fetchcourses();
 
-  });
+  // });
 
 
 
@@ -46,6 +46,17 @@ const Index = () => {
   );
   
 };
+export async function getServerSideProps()
+{
+  const {data}=await axios.get("http://localhost:3000/api/courses")
+
+  return {
+    props: {
+      courses :data,
+    }
+  }
+}
+
 
 
 

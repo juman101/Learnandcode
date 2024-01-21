@@ -1,15 +1,9 @@
 import Link from "next/link";
-
+import { currencyFormatter } from "../../utils/helpers";
 const CourseCard = ({ course }) => {
   // destructure
   const { name, instructor, price, image, slug, paid, categories } = course;
-  const currencyFormatter = (data) => {
-    return ((data.amount * 100) / 100).toLocaleString(data.currency, {
-      style: "currency",
-      currency: data.currency,
-    });
-  };
-
+  
   return (
     <div className="card mb-4">
       <Link href="/course/[slug]" as={`/course/${slug}`} legacyBehavior>

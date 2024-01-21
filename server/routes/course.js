@@ -4,7 +4,8 @@ const router = express.Router();
 //middleware
  import { isInstructor, requireSignin } from "../middlewares/index.js";
 
-import {uploadImage, create, read, uploadVideo, addLesson, update, publish, unpublish, courses } from '../controllers/course.js';
+import {uploadImage, create, read, uploadVideo, addLesson, update, publish, unpublish, courses,checkEnrollment, freeEnrollment,
+    paidEnrollment } from '../controllers/course.js';
 // import {removeImage}  from '../controllers/course.js';
 
 //image
@@ -25,5 +26,11 @@ router.post("/course/lesson/:slug/:instructorId", requireSignin, addLesson);
 
 router.put("/course/publish/:courseId", requireSignin,publish);
 router.put("/course/unpublish/:courseId", requireSignin,unpublish);
+
+router.get('/check-enrollment/:courseId',requireSignin,checkEnrollment);
+
+
+router.post('/free-enrollment/:courseId',requireSignin,freeEnrollment);
+router.post('/paid-enrollment/:courseId',requireSignin,paidEnrollment); //our own
 export default router;
  
