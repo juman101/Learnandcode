@@ -4,26 +4,7 @@ import CourseCard from "../components/cards/CourseCard";
 import Head from "next/head";
 
 const Index = ({courses}) => {
-  
-  // const [courses , setCourses]=useState([]);
-
-  // useEffect(()=>
-  // {
-  //   const fetchcourses =async () =>
-  //   {
-  //     const {data} = await axios.get("/api/courses");
-  //     console.log(data);
-  //     setCourses(data);
-
-  //   };
-
-  //   fetchcourses();
-
-  // });
-
-
-
-  return (
+    return (
     <>
       <div className="jumbotron text-center bg-primary square">
         <h1>Become A FullStack Web Developer</h1>

@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 
 const { Schema } = mongoose;
-
+const { ObjectId } = mongoose.Schema;
 const userSchema = new Schema(
   {
     name: {
@@ -39,6 +39,10 @@ const userSchema = new Schema(
     passwordResetCode: {
       data: String,
     },
+
+    courses : [
+      {type: ObjectId ,ref:" Course"}
+    ]
   },
   { timestamps: true }
 );

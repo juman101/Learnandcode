@@ -2,10 +2,11 @@ import express from "express";
 import formidable from "express-formidable"
 const router = express.Router();
 //middleware
- import { isInstructor, requireSignin } from "../middlewares/index.js";
+ import { isEnrolled, isInstructor, requireSignin } from "../middlewares/index.js";
 
 import {uploadImage, create, read, uploadVideo, addLesson, update, publish, unpublish, courses,checkEnrollment, freeEnrollment,
-    paidEnrollment } from '../controllers/course.js';
+    paidEnrollment, 
+    userCourses} from '../controllers/course.js';
 // import {removeImage}  from '../controllers/course.js';
 
 //image
@@ -32,5 +33,11 @@ router.get('/check-enrollment/:courseId',requireSignin,checkEnrollment);
 
 router.post('/free-enrollment/:courseId',requireSignin,freeEnrollment);
 router.post('/paid-enrollment/:courseId',requireSignin,paidEnrollment); //our own
+
+
+router.get('/user-courses', requireSignin,userCourses);
+
+router.get("/user/course/:slug",requireSignin,isEnrolled,read);
+
 export default router;
  

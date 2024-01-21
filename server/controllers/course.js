@@ -87,7 +87,7 @@ export const create = async (req, res) => {
             instructor: req.auth._id,
             ...req.body,
         }).save();
-        // console.log("abhi tak theek hai bhai ")
+         console.log("abhi tak theek hai bhai ")
         res.json(course);
     } catch(err) {
         console.log(err); 
@@ -240,10 +240,12 @@ export const unpublish = async (req, res) => {
     const user= await User.findById(req.auth._id).exec();
     let ids=[];
     let length=user.courses && user.courses.length;
-    for(let i=0;i<length;i++)
+    if(user.courses){
+    for(let i=0;i<user.courses.length;i++)
     {
       ids.push(user.courses[i].toString())
     }
+}
     res.json({
       status:ids.includes(courseId),
       course:await Course.findById(courseId).exec()
@@ -294,5 +296,22 @@ export const paidEnrollment=async(req,res)=>
   {
     console.log(err);
     return res.status(400).send("Enrollment failed");
+  }
+}
+
+
+export const userCourses=async(req,res)=>
+{
+  try
+  {
+    const user=await User.findById(req.auth._id).exec();
+    // console.log("fdfdfdf"+user);
+    const courses=await Course.find({_id:{$in:user.courses}})
+    .populate("instructor","_id name").exec();
+    // console.log(courses);
+    res.json(courses);
+  }catch(err)
+  {
+    console.log(err);
   }
 }
