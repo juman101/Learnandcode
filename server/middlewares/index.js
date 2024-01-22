@@ -29,7 +29,7 @@ export const isInstructor =async(req,res,next)=>
 export const isEnrolled=async (req,res,next)=>
   {
     try{
-      const user=await User.findById(req.user._id).exec();
+      const user=await User.findById(req.auth._id).exec();
       const course=await Course.findOne({slug:req.params.slug}).exec();
 
       let ids=[];
@@ -50,6 +50,7 @@ export const isEnrolled=async (req,res,next)=>
 
     }catch(err)
     {
+      console.log("hi i am ");
       console.log(err);
     }
   }

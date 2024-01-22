@@ -3,8 +3,9 @@ import { currencyFormatter } from "../../utils/helpers";
 const CourseCard = ({ course }) => {
   // destructure
   const { name, instructor, price, image, slug, paid, categories } = course;
-  
+
   return (
+    
     <div className="card mb-4">
       <Link href="/course/[slug]" as={`/course/${slug}`} legacyBehavior>
         <a className="text-decoration-none">
@@ -16,7 +17,7 @@ const CourseCard = ({ course }) => {
           />
           <div className="card-body">
             <h2 className="h4 font-weight-bold">{name}</h2>
-            <p>by {instructor.name}</p>
+            <p> by {instructor.name}</p>
 
             {categories?.map((c, index) => (
               <span
@@ -32,7 +33,7 @@ const CourseCard = ({ course }) => {
               {paid
                 ? currencyFormatter({
                     amount: price,
-                    currency: "usd",
+                    currency: "inr",
                   })
                 : "Free"}
             </h4>

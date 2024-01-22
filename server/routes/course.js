@@ -6,7 +6,11 @@ const router = express.Router();
 
 import {uploadImage, create, read, uploadVideo, addLesson, update, publish, unpublish, courses,checkEnrollment, freeEnrollment,
     paidEnrollment, 
-    userCourses} from '../controllers/course.js';
+    userCourses,  markCompleted,
+    listCompleted,
+    markIncomplete,
+
+} from '../controllers/course.js';
 // import {removeImage}  from '../controllers/course.js';
 
 //image
@@ -38,6 +42,14 @@ router.post('/paid-enrollment/:courseId',requireSignin,paidEnrollment); //our ow
 router.get('/user-courses', requireSignin,userCourses);
 
 router.get("/user/course/:slug",requireSignin,isEnrolled,read);
+
+
+// mark completed
+router.post("/mark-completed",requireSignin,markCompleted);
+router.post("/list-completed",requireSignin,listCompleted);
+
+router.post("/mark-incomplete",requireSignin,markIncomplete);
+
 
 export default router;
  

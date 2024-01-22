@@ -2,6 +2,7 @@ import AWS from "aws-sdk"
 import { nanoid } from "nanoid";
 import Course from "../models/course.js";
 import User from "../models/user.js";
+import Completed from "../models/completed.js";
 import slugify from "slugify";
 import {readFileSync} from'fs' 
 import dotenv from 'dotenv';
@@ -315,3 +316,64 @@ export const userCourses=async(req,res)=>
     console.log(err);
   }
 }
+
+export const markCompleted = async (req, res) => {
+    const { courseId, lessonId } = req.body;
+    // console.log(courseId, lessonId);
+    // find if user with that course is already created
+    const existing = await Completed.findOne({
+      user: req.auth._id,
+      course: courseId,
+    }).exec();
+  
+    if (existing) {
+      // update
+      const updated = await Completed.findOneAndUpdate(
+        {
+          user: req.auth._id,
+          course: courseId,
+        },
+        {
+          $addToSet: { lessons: lessonId },
+        }
+      ).exec();
+      res.json({ ok: true });
+    } else {
+      // create
+      const created = await new Completed({
+        user: req.auth._id,
+        course: courseId,
+        lessons: lessonId,
+      }).save();
+      res.json({ ok: true });
+    }
+  };
+  
+  export const listCompleted = async (req, res) => {
+    try {
+      const list = await Completed.findOne({
+        user: req.auth._id,
+        course: req.body.courseId,
+      }).exec();
+      list && res.json(list.lessons);
+    } catch (err) {
+      console.log("hi i am ");
+    }
+  }
+  
+  export const markIncomplete= async (req,res)=>{
+    try{
+      const {courseId,lessonId}=req.body;
+      const updated=await Completed.findOneAndUpdate({
+        user: req.auth._id,
+        course: req.body.courseId,
+      },
+      {
+        $pull: {lessons:lessonId},   
+      }
+      ).exec();
+      res.json({ok:true});
+      }catch(err){
+      console.log(err);
+    }
+  }

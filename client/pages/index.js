@@ -4,6 +4,8 @@ import CourseCard from "../components/cards/CourseCard";
 import Head from "next/head";
 
 const Index = ({courses}) => {
+
+  
     return (
     <>
       <div className="jumbotron text-center bg-primary square">
@@ -17,7 +19,9 @@ const Index = ({courses}) => {
       <div className="container-fluid">
         <div className="row pt-2">
           {courses?.map((course) => (
+
             <div key={course._id} className="col-md-4">
+             
               <CourseCard key={course._id} course={course} />
             </div>
           ))}
